@@ -1,1 +1,1 @@
-# lambda-calculus
+# Lambda-calculus

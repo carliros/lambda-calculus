@@ -1,2 +1,3 @@
-import Distribution.Simple
-main = defaultMain
+import UUAGC.Builder (defaultUuagcHook)
+
+main = defaultUuagcHook

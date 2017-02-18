@@ -1,0 +1,13 @@
+
+data Expr
+    | Var name :: String
+    | App expr1 :: Expr expr2 :: Expr
+    | Lam name :: String expr :: Expr
+    | Lit lit :: Lit
+
+data Lit
+    | LInt value :: Integer
+    | LBool value :: Bool
+
+
+deriving * : Show, Eq
