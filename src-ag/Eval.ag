@@ -1,0 +1,43 @@
+imports {
+import qualified Data.Map.Strict as Map
+import Ast
+}
+
+include "Ast.ag"
+
+attr Root
+    syn result :: Value
+
+attr Root Expr
+    inh db :: {Map.Map String Value}
+
+attr Expr Lit
+    syn result :: Value
+    syn me :: self
+
+sem Lit
+    | LInt lhs.result = VInt @value
+    | LBool lhs.result = VBool @value
+
+sem Expr
+    | Lit lhs.result = @lit.result
+    | Var lhs.result = (Map.!) @lhs.db @name
+    | Lam lhs.result = VClosure @name @expr.me @lhs.db
+    | App lhs.result = let fun = sem_Root (Root @expr1.me) @lhs.db
+                           val = sem_Root (Root @expr2.me) @lhs.db
+                       in case fun of
+                            (VClosure name expr env) -> let env' = Map.insert name val env
+                                                        in sem_Root (Root expr) env'
+                            _                        -> error "Tried to apply a non-closure value."
+
+{
+data Value
+    = VInt Integer
+    | VBool Bool
+    | VClosure String Expr (Map.Map String Value)
+
+instance Show Value where
+    show (VInt int) = show int
+    show (VBool bool) = show bool
+    show (VClosure name expr env) = "Closure \"" ++ name ++ "\" in (" ++ show expr ++ ")"
+}

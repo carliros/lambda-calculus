@@ -3,6 +3,8 @@ module Main where
 import           Ast
 import           Control.Monad
 import           Control.Monad.Trans
+import qualified Data.Map.Strict          as Map
+import           Eval
 import           Parser
 import           System.Console.Haskeline
 import           System.Environment
@@ -19,4 +21,6 @@ main = runInputT defaultSettings loop
                                   _    -> (liftIO $ process str) >> loop
 
         process :: String -> IO ()
-        process input = putStrLn $ show (parse input)
+        process input = do let expr = parse input
+                           let result = sem_Root (Root expr) Map.empty
+                           print result

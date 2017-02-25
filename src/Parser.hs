@@ -15,9 +15,6 @@ import           Text.ParserCombinators.UU.Utils
 parse :: String -> Expr
 parse = runParser "<INPUT>" pExpr
 
-pp :: Parser a -> String -> (a, [Error LineColPos])
-pp = execParser
-
 pExpr :: Parser Expr
 pExpr = foldl1 App <$> pList1Sep pSpaces pTerm
 
@@ -35,7 +32,8 @@ pLit =  Lit . LInt  <$> pInteger
     <|> Lit . LBool <$> lexeme pBoolValue
 
 pLambda :: Parser Expr
-pLambda = (\vars expr -> foldr Lam expr vars) <$ pSymbol "\\" <*> pList1Sep pSpaces pIdentifier <* pSymbol "->" <*> pExpr
+pLambda = f <$ pSymbol "\\" <*> pList1Sep pSpaces pIdentifier <* pSymbol "->" <*> pExpr
+  where f = (\vars expr -> foldr Lam expr vars)
 
 pBoolValue :: Parser Bool
 pBoolValue =     True  <$ pSymbol "True"

@@ -11,18 +11,20 @@ copyright:           2017 Author name here
 category:            Web
 build-type:          Custom
 cabal-version:       >=1.10
-extra-source-files:  README.md, src-ag/Ast.ag
+extra-source-files:  README.md, src-ag/Ast.ag, src-ag/Eval.ag
 
-x-uuagc-file-options: "src-ag/Ast.ag": [-mdH]
+x-uuagc-file-options: "src-ag/Ast.ag": [-mdH],
+                      "src-ag/Eval.ag": [-H, -mcfs]
 
 executable untyped
   hs-source-dirs:      src, src-ag
   main-is:             Main.hs
   default-language:    Haskell2010
-  other-modules:       Ast, Parser
+  other-modules:       Ast, Parser, Eval
   build-depends:       base >= 4.7 && < 5,
                        uu-parsinglib >= 2.9.1.1,
                        uuagc >= 0.9.52.1,
                        uuagc-builder,
                        haskeline,
-                       mtl
+                       mtl,
+                       containers
