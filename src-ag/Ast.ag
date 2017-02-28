@@ -11,7 +11,7 @@ data Expr
     | Lit lit :: Lit
 
 data Lit
-    | LInt value :: Integer
+    | LInt value :: Int
     | LBool value :: Bool
 
 deriving * : Show, Eq

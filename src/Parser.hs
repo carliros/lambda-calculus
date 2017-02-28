@@ -40,33 +40,4 @@ pBoolValue =     True  <$ pSymbol "True"
              <|> False <$ pSymbol "False"
 
 pIdentifier :: Parser String
-pIdentifier = (:) <$> pLower <*> pList (pLower <|> pUpper <|> pDigit) <* pSpaces
-
-{--
-pExpr =  pLParen *> pExpr' <* pRParen
-     <|> pExpr'
-
-pZ =          pExpr'
-  <|> App <$> pExpr' <* pSpaces <*> pZ
-
-pExpr' =  Var <$> pIdentifier
-      <|> App <$> pVar <* pSpaces <*> pZ
-      <|> pLam
-      <|> App <$> pLam <* pSpaces <*> pZ
-      <|> pLit
-      <|> App <$> pLit <* pSpaces <*> pZ
-
-
-pLam = Lam <$ pSymbol "\\" <*> pIdentifier <* pSymbol "->" <*> pExpr'
-
-pVar = Var <$> pIdentifier
-
-pLit =  Lit . LInt  <$> pInteger
-    <|> Lit . LBool <$> lexeme pBoolValue
-
-pBoolValue =     True  <$ pSymbol "True"
-             <|> False <$ pSymbol "False"
-
-pIdentifier = (:) <$> pLower <*> pList (pLower <|> pUpper <|> pDigit) <* pSpaces
-
--}
+pIdentifier = (:) <$> pLower <*> pList (pLower <|> pUpper <|> pDigit <|> pSym '_') <* pSpaces

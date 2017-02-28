@@ -6,38 +6,35 @@ import Ast
 include "Ast.ag"
 
 attr Root
-    syn result :: Value
+    syn result :: Expr
 
 attr Root Expr
-    inh db :: {Map.Map String Value}
+    inh db :: {Map.Map String Expr}
 
 attr Expr Lit
-    syn result :: Value
-    syn me :: self
+    syn result :: {Expr}
 
 sem Lit
-    | LInt lhs.result = VInt @value
-    | LBool lhs.result = VBool @value
+    | LInt lhs.result = genChurchNumber @value
+    | LBool lhs.result = if @value
+                            then (Lam "x" (Lam "y" (Var "x")))
+                            else (Lam "x" (Lam "y" (Var "y")))
 
 sem Expr
     | Lit lhs.result = @lit.result
-    | Var lhs.result = (Map.!) @lhs.db @name
-    | Lam lhs.result = VClosure @name @expr.me @lhs.db
-    | App lhs.result = let fun = sem_Root (Root @expr1.me) @lhs.db
-                           val = sem_Root (Root @expr2.me) @lhs.db
-                       in case fun of
-                            (VClosure name expr env) -> let env' = Map.insert name val env
-                                                        in sem_Root (Root expr) env'
-                            _                        -> error "Tried to apply a non-closure value."
+    | Var lhs.result = case Map.lookup @name @lhs.db of
+                          Nothing  -> Var @name
+                          Just val -> val
+    | Lam lhs.result = Lam @name @expr.result
+    | App lhs.result = case @expr1.result of
+                            (Lam nm bd) -> let env' = Map.insert nm @expr2.result @lhs.db
+                                           in sem_Root (Root bd) env'
+                            _           -> App @expr1.result @expr2.result
 
 {
-data Value
-    = VInt Integer
-    | VBool Bool
-    | VClosure String Expr (Map.Map String Value)
-
-instance Show Value where
-    show (VInt int) = show int
-    show (VBool bool) = show bool
-    show (VClosure name expr env) = "Closure \"" ++ name ++ "\" in (" ++ show expr ++ ")"
+genChurchNumber :: Int -> Expr
+genChurchNumber n = Lam "s" (Lam "z" (buildChurchNumber n))
+    where buildChurchNumber :: Int -> Expr
+          buildChurchNumber 0 = Var "z"
+          buildChurchNumber m = App (Var "s") (buildChurchNumber (m - 1))
 }

@@ -20,7 +20,7 @@ executable untyped
   hs-source-dirs:      src, src-ag
   main-is:             Main.hs
   default-language:    Haskell2010
-  other-modules:       Ast, Parser, Eval
+  other-modules:       Ast, Parser, Eval, Preload
   build-depends:       base >= 4.7 && < 5,
                        uu-parsinglib >= 2.9.1.1,
                        uuagc >= 0.9.52.1,
